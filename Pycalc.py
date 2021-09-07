@@ -12,6 +12,8 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtCore import Qt
 
+from functools import  partial
+
 __Author__ = "Duke"
 
 class pycalc(QMainWindow):
@@ -28,7 +30,7 @@ class pycalc(QMainWindow):
     self.createDisplay()
     self.createButtons()
 
- def Setdiplay(self,text):
+ def Setdisplay(self,text):
      self.display.setText(text)
      self.display.setFocus()
 
@@ -36,7 +38,7 @@ class pycalc(QMainWindow):
     return self.display.text()
 
  def Cleardisplay(self):
-     self.Setdiplay("")
+     self.Setdisplay("")
  def createButtons(self):
    self.buttons = {}
    buttonsLayout = QGridLayout()
@@ -49,6 +51,10 @@ class pycalc(QMainWindow):
        "6": (1,1),
        "7": (1,2),
        "8": (1,3),
+       "+": (2,0),
+       "-": (2,1),
+       "*": (2,2),
+       "/": (2,3),
    }
 
    for BtnTxt,  pos in buttons.items():
@@ -70,7 +76,27 @@ def main():
      calc = QApplication(sys.argv)
      view = pycalc()
      view.show()
+     Cal_controller(view=view)
      sys.exit(calc.exec_())
+
+
+class Cal_controller():
+    #Connecta os comandos aos Botoes
+    def __init__(self,view):
+        self._view = view
+        self.connsignal()
+    def buldingexpres(self,exp):
+        expression = self._view.DisplayTExt() + exp
+        self._view.Setdisplay(expression)
+    def connsignal(self):
+
+        for BtnTxt , btn in self._view.buttons.items():
+            if BtnTxt not in {'=', 'C'}:
+                btn.clicked.connect(partial(self.buldingexpres,BtnTxt))
+
+
+
+
 
 if __name__ == '__main__':
      main()
